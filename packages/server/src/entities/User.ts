@@ -1,13 +1,17 @@
-import { MaxLength } from "class-validator";
+import { MinLength } from "class-validator";
 import { Field, ObjectType } from "type-graphql";
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { DailyObjective } from "./DailyObjective";
+import { MonthlyObjective } from "./MonthlyObjective";
+import { Objective } from "./Objective";
 
 @ObjectType()
 @Entity()
@@ -17,7 +21,7 @@ export class User extends BaseEntity {
   id!: number;
 
   @Field()
-  @MaxLength(3)
+  @MinLength(3)
   @Column({ unique: true })
   username!: string;
 
@@ -31,11 +35,24 @@ export class User extends BaseEntity {
 
   @Field()
   @Column({ nullable: true })
-  @MaxLength(5)
   lastname: string;
 
   @Column()
+  @MinLength(8)
   password!: string;
+
+  @OneToMany(
+    () => MonthlyObjective,
+    (monthly_objective) => monthly_objective.user
+  )
+  monthly_objectives: MonthlyObjective[];
+
+  @Field(() => DailyObjective)
+  @OneToMany(() => DailyObjective, (daily_objective) => daily_objective.user)
+  daily_objectives: DailyObjective[];
+
+  @OneToMany(() => Objective, (objective) => objective.user)
+  objectives: Objective[];
 
   @Field(() => String)
   @CreateDateColumn()

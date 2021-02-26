@@ -25,11 +25,11 @@ export const validateRegister = (options: RegisterInput) => {
       },
     ];
   }
-  if (options.password.length <= 3) {
+  if (options.password.length <= 7) {
     return [
       {
         field: "password",
-        message: "パスワードは4文字以上を入力してください",
+        message: "パスワードは8文字以上を入力してください",
       },
     ];
   }
