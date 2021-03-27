@@ -1,0 +1,8 @@
+mutation CreateBetterist {
+  createBetterist {
+    evaluator {
+      id
+      username
+    }
+  }
+}

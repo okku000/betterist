@@ -1,0 +1,6 @@
+query MonthlyObjectivesInthisMonth {
+  monthlyObjectivesInthisMonth {
+    id
+    title
+  }
+}

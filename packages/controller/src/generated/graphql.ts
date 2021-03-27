@@ -20,8 +20,20 @@ export type Scalars = {
 
 export type Query = {
   __typename?: "Query";
+  currentDailyObjective: DailyObjective;
+  previousDailyObjective: DailyObjective;
   hello: Scalars["String"];
+  monthlyObjectivesInthisMonth: Array<MonthlyObjective>;
   me?: Maybe<User>;
+};
+
+export type DailyObjective = {
+  __typename?: "DailyObjective";
+  id: Scalars["Float"];
+  createdAt: Scalars["String"];
+  updatedAt: Scalars["String"];
+  user: User;
+  objectives: Array<Objective>;
 };
 
 export type User = {
@@ -29,19 +41,49 @@ export type User = {
   id: Scalars["Float"];
   username: Scalars["String"];
   email: Scalars["String"];
-  firstname: Scalars["String"];
-  lastname: Scalars["String"];
+  firstName: Scalars["String"];
+  lastName: Scalars["String"];
+  createdAt: Scalars["String"];
+  updatedAt: Scalars["String"];
+};
+
+export type Objective = {
+  __typename?: "Objective";
+  id: Scalars["Float"];
+  title: Scalars["String"];
+  isComplete: Scalars["Boolean"];
+  monthlyObjective: MonthlyObjective;
+  user: User;
+  dailyObjective: DailyObjective;
+  createdAt: Scalars["String"];
+  updatedAt: Scalars["String"];
+};
+
+export type MonthlyObjective = {
+  __typename?: "MonthlyObjective";
+  id: Scalars["Float"];
+  title: Scalars["String"];
+  user: User;
+  objectives: Objective;
   createdAt: Scalars["String"];
   updatedAt: Scalars["String"];
 };
 
 export type Mutation = {
   __typename?: "Mutation";
+  createBetterist: Betterist;
+  createDailyObjective: DailyObjective;
+  createMonthlyObjective: MonthlyObjective;
+  createObjectives?: Maybe<Array<Objective>>;
   register: UserResponse;
   login: UserResponse;
   logout: Scalars["Boolean"];
   changePassword: UserResponse;
   forgotPassword: Scalars["Boolean"];
+};
+
+export type MutationCreateMonthlyObjectiveArgs = {
+  title: Scalars["String"];
 };
 
 export type MutationRegisterArgs = {
@@ -60,6 +102,15 @@ export type MutationChangePasswordArgs = {
 
 export type MutationForgotPasswordArgs = {
   email: Scalars["String"];
+};
+
+export type Betterist = {
+  __typename?: "Betterist";
+  id: Scalars["Float"];
+  evaluator: User;
+  submitter: User;
+  createdAt: Scalars["String"];
+  updatedAt: Scalars["String"];
 };
 
 export type UserResponse = {
@@ -104,6 +155,27 @@ export type ChangePasswordMutation = { __typename?: "Mutation" } & {
   changePassword: { __typename?: "UserResponse" } & RegularUserResponseFragment;
 };
 
+export type CreateBetteristMutationVariables = Exact<{ [key: string]: never }>;
+
+export type CreateBetteristMutation = { __typename?: "Mutation" } & {
+  createBetterist: { __typename?: "Betterist" } & {
+    evaluator: { __typename?: "User" } & Pick<User, "id" | "username">;
+  };
+};
+
+export type CreateObjectivesMutationVariables = Exact<{ [key: string]: never }>;
+
+export type CreateObjectivesMutation = { __typename?: "Mutation" } & {
+  createObjectives?: Maybe<
+    Array<
+      { __typename?: "Objective" } & Pick<
+        Objective,
+        "id" | "title" | "isComplete"
+      >
+    >
+  >;
+};
+
 export type ForgotPasswordMutationVariables = Exact<{
   email: Scalars["String"];
 }>;
@@ -129,6 +201,16 @@ export type LogoutMutation = { __typename?: "Mutation" } & Pick<
   "logout"
 >;
 
+export type MonthlyObjectivesInthisMonthQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type MonthlyObjectivesInthisMonthQuery = { __typename?: "Query" } & {
+  monthlyObjectivesInthisMonth: Array<
+    { __typename?: "MonthlyObjective" } & Pick<MonthlyObjective, "id" | "title">
+  >;
+};
+
 export type RegisterMutationVariables = Exact<{
   options: RegisterInput;
 }>;
@@ -137,10 +219,40 @@ export type RegisterMutation = { __typename?: "Mutation" } & {
   register: { __typename?: "UserResponse" } & RegularUserResponseFragment;
 };
 
+export type CurerntDailyObjectiveQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type CurerntDailyObjectiveQuery = { __typename?: "Query" } & {
+  currentDailyObjective: { __typename?: "DailyObjective" } & {
+    objectives: Array<
+      { __typename?: "Objective" } & Pick<
+        Objective,
+        "id" | "title" | "isComplete"
+      >
+    >;
+  };
+};
+
 export type MeQueryVariables = Exact<{ [key: string]: never }>;
 
 export type MeQuery = { __typename?: "Query" } & {
   me?: Maybe<{ __typename?: "User" } & RegularUserFragment>;
+};
+
+export type PreviousDailyObjectiveQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type PreviousDailyObjectiveQuery = { __typename?: "Query" } & {
+  previousDailyObjective: { __typename?: "DailyObjective" } & {
+    objectives: Array<
+      { __typename?: "Objective" } & Pick<
+        Objective,
+        "id" | "title" | "isComplete"
+      >
+    >;
+  };
 };
 
 export const RegularErrorFragmentDoc = gql`
@@ -182,6 +294,39 @@ export function useChangePasswordMutation() {
     ChangePasswordMutationVariables
   >(ChangePasswordDocument);
 }
+export const CreateBetteristDocument = gql`
+  mutation CreateBetterist {
+    createBetterist {
+      evaluator {
+        id
+        username
+      }
+    }
+  }
+`;
+
+export function useCreateBetteristMutation() {
+  return Urql.useMutation<
+    CreateBetteristMutation,
+    CreateBetteristMutationVariables
+  >(CreateBetteristDocument);
+}
+export const CreateObjectivesDocument = gql`
+  mutation CreateObjectives {
+    createObjectives {
+      id
+      title
+      isComplete
+    }
+  }
+`;
+
+export function useCreateObjectivesMutation() {
+  return Urql.useMutation<
+    CreateObjectivesMutation,
+    CreateObjectivesMutationVariables
+  >(CreateObjectivesDocument);
+}
 export const ForgotPasswordDocument = gql`
   mutation ForgotPassword($email: String!) {
     forgotPassword(email: $email)
@@ -217,6 +362,26 @@ export function useLogoutMutation() {
     LogoutDocument
   );
 }
+export const MonthlyObjectivesInthisMonthDocument = gql`
+  query MonthlyObjectivesInthisMonth {
+    monthlyObjectivesInthisMonth {
+      id
+      title
+    }
+  }
+`;
+
+export function useMonthlyObjectivesInthisMonthQuery(
+  options: Omit<
+    Urql.UseQueryArgs<MonthlyObjectivesInthisMonthQueryVariables>,
+    "query"
+  > = {}
+) {
+  return Urql.useQuery<MonthlyObjectivesInthisMonthQuery>({
+    query: MonthlyObjectivesInthisMonthDocument,
+    ...options,
+  });
+}
 export const RegisterDocument = gql`
   mutation Register($options: RegisterInput!) {
     register(options: $options) {
@@ -231,6 +396,29 @@ export function useRegisterMutation() {
     RegisterDocument
   );
 }
+export const CurerntDailyObjectiveDocument = gql`
+  query CurerntDailyObjective {
+    currentDailyObjective {
+      objectives {
+        id
+        title
+        isComplete
+      }
+    }
+  }
+`;
+
+export function useCurerntDailyObjectiveQuery(
+  options: Omit<
+    Urql.UseQueryArgs<CurerntDailyObjectiveQueryVariables>,
+    "query"
+  > = {}
+) {
+  return Urql.useQuery<CurerntDailyObjectiveQuery>({
+    query: CurerntDailyObjectiveDocument,
+    ...options,
+  });
+}
 export const MeDocument = gql`
   query Me {
     me {
@@ -244,4 +432,27 @@ export function useMeQuery(
   options: Omit<Urql.UseQueryArgs<MeQueryVariables>, "query"> = {}
 ) {
   return Urql.useQuery<MeQuery>({ query: MeDocument, ...options });
+}
+export const PreviousDailyObjectiveDocument = gql`
+  query PreviousDailyObjective {
+    previousDailyObjective {
+      objectives {
+        id
+        title
+        isComplete
+      }
+    }
+  }
+`;
+
+export function usePreviousDailyObjectiveQuery(
+  options: Omit<
+    Urql.UseQueryArgs<PreviousDailyObjectiveQueryVariables>,
+    "query"
+  > = {}
+) {
+  return Urql.useQuery<PreviousDailyObjectiveQuery>({
+    query: PreviousDailyObjectiveDocument,
+    ...options,
+  });
 }

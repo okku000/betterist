@@ -5,7 +5,9 @@
   ],
   "scripts": {
     "server": "yarn workspace @betterist/server dev",
+    "watch": "yarn workspace @betterist/server watch",
     "web": "yarn workspace @betterist/web dev",
-    "controller": "yarn workspace @betterist/controllers build"
+    "controller": "yarn workspace @betterist/controllers build",
+    "gen": "yarn workspace @betterist/controllers gen"
   }
 }

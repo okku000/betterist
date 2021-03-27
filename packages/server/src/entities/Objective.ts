@@ -4,8 +4,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -22,41 +22,41 @@ export class Objective extends BaseEntity {
 
   @Field()
   @Column()
-  user_id!: number;
-
-  @Field(() => User)
-  @ManyToOne(() => User, (user) => user.objectives)
-  user: User;
-
-  @Field()
-  @Column()
   title!: string;
 
   @Field()
   @Column({ default: true })
-  is_complete!: boolean;
+  isComplete!: boolean;
 
-  @Field()
+  @Index()
   @Column()
-  monthly_objective_id!: number;
+  monthlyObjectiveId!: number;
 
   @Field(() => MonthlyObjective)
-  @OneToOne(
+  @ManyToOne(
     () => MonthlyObjective,
-    (monthly_objective) => monthly_objective.objective
+    (monthlyObjective) => monthlyObjective.objectives
   )
-  monthly_objective: MonthlyObjective;
+  monthlyObjective!: MonthlyObjective;
 
-  @Field()
+  @Index()
   @Column()
-  daily_objective_id!: number;
+  userId!: number;
+
+  @Field(() => User)
+  @ManyToOne(() => User, (user) => user.objectives)
+  user!: User;
+
+  @Index()
+  @Column()
+  dailyObjectiveId: number;
 
   @Field(() => DailyObjective)
   @ManyToOne(
     () => DailyObjective,
-    (daily_objective) => daily_objective.objectives
+    (dailyObjective) => dailyObjective.objectives
   )
-  daily_objective: DailyObjective;
+  dailyObjective: DailyObjective;
 
   @Field(() => String)
   @CreateDateColumn()

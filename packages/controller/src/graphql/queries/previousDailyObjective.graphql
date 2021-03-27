@@ -1,0 +1,9 @@
+query PreviousDailyObjective {
+  previousDailyObjective {
+    objectives {
+      id
+      title
+      isComplete
+    }
+  }
+}

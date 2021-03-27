@@ -119,6 +119,7 @@ export class UserResolver {
     }
 
     req.session.userId = user.id;
+    console.log(req.session);
 
     return { user };
   }
@@ -196,7 +197,6 @@ export class UserResolver {
   ) {
     const user = await User.findOne({ email: email });
     if (!user) {
-      // email がないことを知らせるのは良くないので、trueで返す
       return true;
     }
     const token = v4();

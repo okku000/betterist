@@ -1,11 +1,13 @@
+import dayjs from "dayjs";
 import { Field, ObjectType } from "type-graphql";
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   ManyToOne,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -19,21 +21,21 @@ export class MonthlyObjective extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Field()
+  @Index()
   @Column()
-  user_id!: number;
-
-  @Field(() => User)
-  @ManyToOne(() => User, (user) => user.monthly_objectives)
-  user: User;
-
-  @Field(() => Objective)
-  @OneToOne(() => Objective, (objective) => objective.monthly_objective)
-  objective: Objective;
+  userId: number;
 
   @Field()
   @Column()
   title!: string;
+
+  @Field(() => User)
+  @ManyToOne(() => User, (user) => user.monthlyObjectives)
+  user: User;
+
+  @Field(() => Objective)
+  @OneToMany(() => Objective, (objective) => objective.monthlyObjective)
+  objectives: Objective[];
 
   @Field(() => String)
   @CreateDateColumn()
@@ -42,4 +44,15 @@ export class MonthlyObjective extends BaseEntity {
   @Field(() => String)
   @UpdateDateColumn()
   updatedAt = new Date();
+
+  static async createdInThisMonth(userId: number): Promise<MonthlyObjective[]> {
+    const today = dayjs();
+    return this.createQueryBuilder("monthly_objective")
+      .where(`monthly_objective.createdAt BETWEEN :start AND :end `, {
+        start: today.startOf("month").format("YYYY/MM/DD HH:mm:ss"),
+        end: today.endOf("month").format("YYYY/MM/DD HH:mm:ss"),
+      })
+      .andWhere(`monthly_objective.userId = :userId`, { userId: userId })
+      .getMany();
+  }
 }

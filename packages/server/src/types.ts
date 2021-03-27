@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Session } from "express-session";
 import { Redis } from "ioredis";
+import { createObjectiveLoader } from "./utils/loaders/createObjectiveLoader";
 
 export type MyContext = {
   req: Request & {
@@ -8,4 +9,5 @@ export type MyContext = {
   };
   res: Response;
   redis: Redis;
+  objectiveLoader: ReturnType<typeof createObjectiveLoader>;
 };

@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Betterist } from "./Betterist";
 import { DailyObjective } from "./DailyObjective";
 import { MonthlyObjective } from "./MonthlyObjective";
 import { Objective } from "./Objective";
@@ -31,28 +32,15 @@ export class User extends BaseEntity {
 
   @Field()
   @Column({ nullable: true })
-  firstname: string;
+  firstName: string;
 
   @Field()
   @Column({ nullable: true })
-  lastname: string;
+  lastName: string;
 
   @Column()
   @MinLength(8)
   password!: string;
-
-  @OneToMany(
-    () => MonthlyObjective,
-    (monthly_objective) => monthly_objective.user
-  )
-  monthly_objectives: MonthlyObjective[];
-
-  @Field(() => DailyObjective)
-  @OneToMany(() => DailyObjective, (daily_objective) => daily_objective.user)
-  daily_objectives: DailyObjective[];
-
-  @OneToMany(() => Objective, (objective) => objective.user)
-  objectives: Objective[];
 
   @Field(() => String)
   @CreateDateColumn()
@@ -61,4 +49,23 @@ export class User extends BaseEntity {
   @Field(() => String)
   @UpdateDateColumn()
   updatedAt = new Date();
+
+  // relateions----
+  @OneToMany(
+    () => MonthlyObjective,
+    (monthlyObjective) => monthlyObjective.user
+  )
+  monthlyObjectives: MonthlyObjective[];
+
+  @OneToMany(() => DailyObjective, (dailyObjective) => dailyObjective.user)
+  daily_objectives: DailyObjective[];
+
+  @OneToMany(() => Objective, (objective) => objective.user)
+  objectives: Objective[];
+
+  @OneToMany(() => Betterist, (betterist) => betterist.evaluator)
+  evaluators: Betterist[];
+
+  @OneToMany(() => Betterist, (betterist) => betterist.submitter)
+  submitters: Betterist[];
 }
